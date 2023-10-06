@@ -3,6 +3,8 @@ package guru.springframework.client;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
+import guru.springframework.model.BeerDto;
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,44 @@ import org.springframework.boot.test.context.SpringBootTest;
 class BeerClientImplTest {
 
   @Autowired BeerClient client;
+
+  @Test
+  void getCreateBeer() {
+    AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+    BeerDto newDto =
+        BeerDto.builder()
+            .price(new BigDecimal("10.99"))
+            .beerName("Mango Bobs")
+            .beerStyle("IPA")
+            .quantityOnHand(500)
+            .upc("123456")
+            .build();
+
+    client
+        .createBeer(newDto)
+        .subscribe(
+            dto -> {
+              System.out.println(dto.toString());
+              atomicBoolean.set(true);
+            });
+
+    await().untilTrue(atomicBoolean);
+  }
+
+  @Test
+  void getGetBeerByStyle() {
+    AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+    client
+        .getBeerByStyle("Pale Ale")
+        .subscribe(
+            dto -> {
+              System.out.println(dto.toString());
+              atomicBoolean.set(true);
+            });
+
+    await().untilTrue(atomicBoolean);
+  }
 
   @Test
   void getGetBeerById() {
