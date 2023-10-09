@@ -76,4 +76,22 @@ public class BeerClientImpl implements BeerClient {
         .toBodilessEntity()
         .flatMap(voidResponseEntity -> getBeerById(dto.getId()));
   }
+
+  @Override
+  public Mono<BeerDto> patchBeer(BeerDto dto) {
+    return webClient.patch().uri(uriBuilder -> uriBuilder.path(BEER_PATH_ID).build(dto.getId()))
+        .body(Mono.just(dto), BeerDto.class)
+        .retrieve()
+        .toBodilessEntity()
+        .flatMap(voidResponseEntity -> getBeerById(dto.getId()));
+  }
+
+  @Override
+  public Mono<Void> deleteBeer(BeerDto dto) {
+    return webClient.delete()
+        .uri(uriBuilder -> uriBuilder.path(BEER_PATH_ID).build(dto.getId()))
+        .retrieve()
+        .toBodilessEntity()
+        .then();
+  }
 }
